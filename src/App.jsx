@@ -5,7 +5,9 @@
 import "./styles/App.css";
 import { useState, useEffect } from "react";
 import shuffle from "./utils/shuffle";
-// import Card from "./components/Card.jsx";
+import Card from "./components/Card.jsx";
+import MusicPlayer from "./components/MusicPlayer.jsx";
+
 // import Scoreboard from "./components/Scoreboard.jsx";
 
 function App() {
@@ -13,7 +15,16 @@ function App() {
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [clickedIds, setClickedIds] = useState([]);
-
+  useEffect(() => {
+    document.title = "Memory Card Game";
+  }, []);
+  useEffect(() => {
+    const link = document.querySelector("link[rel~='icon']");
+    if (link) {
+      link.href =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Memory_card_game_icon.svg/1200px-Memory_card_game_icon.svg.png";
+    }
+  }, []);
   useEffect(() => {
     // Fetch API data into cards
     async function fetchCast() {
@@ -48,7 +59,23 @@ function App() {
     shuffle();
   };
 
-  return <></>;
+  return (
+    <div className="app">
+      <h1>Memory Card Game</h1>
+      {/* <Scoreboard score={score} bestScore={bestScore} /> */}
+      <div className="cards-container">
+        {cards.map((card) => (
+          <Card
+            key={card.id}
+            image={card.image}
+            title={card.name}
+            onClick={() => handleCardClick(card.id)}
+          />
+        ))}
+      </div>
+      <MusicPlayer />
+    </div>
+  );
 }
 
 export default App;
