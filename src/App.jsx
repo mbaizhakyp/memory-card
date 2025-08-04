@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import shuffle from "./utils/shuffle";
 import Card from "./components/Card.jsx";
 import MusicPlayer from "./components/MusicPlayer.jsx";
+import Scoreboard from "./components/Scoreboard.jsx";
 
 // import Scoreboard from "./components/Scoreboard.jsx";
 
@@ -15,6 +16,8 @@ function App() {
   const [score, setScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [clickedIds, setClickedIds] = useState([]);
+
+  // Set document title and favicon
   useEffect(() => {
     document.title = "Memory Card Game";
   }, []);
@@ -33,6 +36,8 @@ function App() {
         const data = await res.json();
         const formattedCards = data
           .filter((c) => c.character.image) // filter out those with no images
+          .slice(0, 8) // Limit to 4 cards for gameplay
+
           .map((member) => ({
             id: member.character.id,
             name: member.character.name,
@@ -48,21 +53,28 @@ function App() {
   }, []);
   const handleCardClick = (id) => {
     if (clickedIds.includes(id)) {
+      // Game over - clicked same card twice
       setScore(0);
       setClickedIds([]);
     } else {
       const newScore = score + 1;
       setScore(newScore);
       setClickedIds([...clickedIds, id]);
-      if (newScore > bestScore) setBestScore(newScore);
+
+      if (newScore > bestScore) {
+        setBestScore(newScore);
+      }
     }
-    shuffle();
+
+    // Shuffle cards after every click
+    setCards((currentCards) => shuffle(currentCards));
   };
 
   return (
     <div className="app">
       <h1>Memory Card Game</h1>
-      {/* <Scoreboard score={score} bestScore={bestScore} /> */}
+      <Scoreboard score={score} bestScore={bestScore} />
+
       <div className="cards-container">
         {cards.map((card) => (
           <Card
